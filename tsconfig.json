@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",  // 目标语言版本
+    "module": "commonjs", // 指定生成代码的模板标准
+    "outDir": "./dist", // 指定输出目录
+    "rootDir": "./", // 编译文件根目录
+    "strict": true, // 严格模式
+    "allowSyntheticDefaultImports": true, // 没有默认导出时, 编译器会创建一个默认导出
+    "esModuleInterop": true, // 允许export= 导出, 由import from导入
+    "forceConsistentCasingInFileNames": true, // 强制区分大小写
+  },
+  "include": [ // 需要编译的的文件和目录
+    ".eslintrc.js",
+    ".prettier.js",
+    "src/**/*"
+  ],
+  "files": [
+    "src/app.ts"
+  ]
+}
