@@ -1437,4 +1437,4 @@ export async function selectDb(DbName: number) {
 
 本文主要介绍了 koa2+ts 后端项目的环境搭建和常用中间件, 下一篇会在本文基础上, 介绍注册和登录系统的设计和开发<br />
 
-本文的完整代码在 <a href="https://gitee.com/fhtwl/koa-ts-learn/tree/step2/"> gitee koa-ts-learn step1</a>
+本文的完整代码在 <a href="https://github.com/fhtwl/koa-ts-learn/tree/step1"> github koa-ts-learn step1</a>
