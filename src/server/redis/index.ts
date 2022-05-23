@@ -1,3 +1,4 @@
+import { Models } from '../../common/typings/model'
 import Config from '../../config/Config'
 import { DataBaseFailed } from '../../core/HttpException'
 import redis from './redis'
@@ -25,38 +26,66 @@ export async function selectDb(DbName: number) {
   })
 }
 
-// /**
-//  * 新增日志
-//  * @param log
-//  * @returns
-//  */
-// export async function addLog(log: string): Promise<Boolean> {
-//   return new Promise((resolve) => {
-//     selectDb(Config.LOGS.REDIS_DB_NAME).then(() => {
-//       redis
-//         .lpush(Config.LOGS.REDIS_KEY, Config.LOGS.EXPIRESIN, log)
-//         .then(() => {
-//           resolve(true)
-//         })
-//         .catch(redisCatch)
-//     })
-//   })
-// }
+/**
+ * 保存token
+ * @param key
+ * @param uid
+ * @returns
+ */
+export async function saveToken(key: string, uid: number): Promise<Models.Result> {
+  return new Promise((resolve) => {
+    redis.select(Config.SECURITY.TOKEN_REDIS_DB).then(() => {
+      redis.setex(key, Config.SECURITY.EXPIRES_IN, uid).then((res) => {
+        const result: Models.Result = {
+          msg: 'ok',
+          state: 1,
+          results: res,
+          fields: [],
+        }
+        resolve(result)
+      })
+    })
+  })
+}
 
-// /**
-//  * 获取最新的日志
-//  * @param length 获取的条数
-//  * @returns
-//  */
-// export async function getNewLogs(length: number): Promise<string[]> {
-//   return new Promise((resolve) => {
-//     selectDb(Config.LOGS.REDIS_DB_NAME).then(() => {
-//       redis
-//         .lrange(Config.LOGS.REDIS_KEY, 0, length)
-//         .then((res) => {
-//           resolve(res)
-//         })
-//         .catch(redisCatch)
-//     })
-//   })
-// }
+/**
+ * 获取token的值
+ * @param key
+ * @returns
+ */
+export async function getTokenValue(key: string): Promise<Models.Result> {
+  return new Promise((resolve) => {
+    redis.select(Config.SECURITY.TOKEN_REDIS_DB).then(() => {
+      redis.get(key).then((res) => {
+        const result: Models.Result = {
+          msg: 'ok',
+          state: 1,
+          results: res,
+          fields: [],
+        }
+        resolve(result)
+      })
+    })
+  })
+}
+
+/**
+ * 删除token
+ * @param key
+ * @returns
+ */
+export async function deleteToken(key: string): Promise<Models.Result> {
+  return new Promise((resolve) => {
+    redis.select(Config.SECURITY.TOKEN_REDIS_DB).then(() => {
+      redis.del(key).then((res) => {
+        const result: Models.Result = {
+          msg: 'ok',
+          state: 1,
+          results: res,
+          fields: [],
+        }
+        resolve(result)
+      })
+    })
+  })
+}
