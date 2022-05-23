@@ -1217,4 +1217,4 @@ export default router
 
 本文从数据库创建开始, 对完整的注册和登录功能进行了设计和开发, 下一节将开始介绍权限管理控制的设计和开发<br />
 
-本文的完整代码地址 <a href="https://gitee.com/fhtwl/koa-ts-learn/tree/step2/"> gitee koa-ts-learn</a>
+本文的完整代码地址 <a href="https://github.com/fhtwl/koa-ts-learn/tree/step2"> github koa-ts-learn</a>
