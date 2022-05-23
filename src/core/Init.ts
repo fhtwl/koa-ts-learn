@@ -6,7 +6,6 @@ import { getAllFilesExport } from '../common/utils/utils'
 import Router from 'koa-router'
 import Config from '../config/Config'
 import catchError from '../middlewares/catchError'
-import session from 'koa-session'
 class Init {
   public static app: Koa<Koa.DefaultState, Koa.DefaultContext>
   public static server: http.Server
@@ -15,7 +14,6 @@ class Init {
     Init.server = server
     Init.loadBodyParser()
     Init.initCatchError()
-    Init.loadSession()
     Init.initLoadRouters()
   }
 
@@ -35,25 +33,6 @@ class Init {
   // 错误监听和日志处理
   public static initCatchError() {
     Init.app.use(catchError)
-  }
-
-  // 加载session
-  public static loadSession() {
-    Init.app.keys = ['some secret hurr']
-    Init.app.use(
-      session(
-        {
-          key: 'koa:sess', //cookie key (default is koa:sess)
-          maxAge: 86400000, // cookie的过期时间 maxAge in ms (default is 1 days)
-          overwrite: true, //是否可以overwrite    (默认default true)
-          httpOnly: true, //cookie是否只有服务器端可以访问 httpOnly or not (default true)
-          signed: true, //签名默认true
-          rolling: false, //在每次请求时强行设置cookie，这将重置cookie过期时间（默认：false）
-          renew: false, //(boolean) renew session when session is nearly expired,
-        },
-        Init.app
-      )
-    )
   }
 }
 
