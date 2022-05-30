@@ -51,7 +51,7 @@
 
 ## 2. system_role
 
-我们需要新建 **system_role** 表用于存储所有的角色, 在前文中, 我们设计和创建了用户表 **system_user** , 并为 **system_user** 创建了 _role_ids_ 字段, 用于记录角色的 id. _role_ids_ 以逗号分隔字符串的形式, 存储多个 id , 即 **system_role** 的 id, 实现了每一个用户都能有多种角色, 每一个角色都能有多个用户. 在 **system_role** 中, 我们通 _menus_ids_ 字段保存前端菜单 id, 实现角色和菜单权限的多对多关系
+我们需要新建 **system_role** 表用于存储所有的角色, 在前文中, 我们设计和创建了用户表 **system_user** , 并为 **system_user** 创建了 _role_ids_ 字段, 用于记录角色的 id. _role_ids_ 以逗号分隔字符串的形式, 存储多个 id , 即 **system_role** 的 id, 实现了每一个用户都能有多种角色, 每一个角色都能有多个用户. 在 **system_role** 中, 我们通 _menu_ids_ 字段保存前端菜单 id, 实现角色和菜单权限的多对多关系
 
 ```sh
 DROP TABLE IF EXISTS `system_role`;
@@ -61,7 +61,7 @@ CREATE TABLE `system_role`  (
   `describe` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '描述',
   `parent_id` int(0) NOT NULL COMMENT '父id',
   `serial_num` int(0) NULL DEFAULT NULL COMMENT '排序',
-  `menus_ids` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '菜单权限',
+  `menu_ids` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '菜单权限',
   `created_at` datetime(0) NOT NULL COMMENT '创建时间',
   `updated_at` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE

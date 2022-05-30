@@ -22,4 +22,35 @@ export namespace Models {
     /** 描述信息 */
     msg: string
   }
+
+  // 一般list
+  interface List {
+    id?: number
+    [propsName: string]: any
+  }
+
+  interface TreeOption {
+    id?: string
+    parentId?: string
+  }
+
+  // tree节点
+  interface TreeNode {
+    children: TreeNode[]
+    serialNum: number
+    parentId: number
+    id: number
+    [propsName: string]: any
+  }
+
+  type SortType = 'desc' | 'asc'
+
+  // 分页参数
+  interface BasePaginationQuery {
+    pageNum: number
+    pageSize: number
+    params: {
+      [propsName: string]: any
+    }
+  }
 }
