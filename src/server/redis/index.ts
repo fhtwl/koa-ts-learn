@@ -1,5 +1,3 @@
-import { Models } from '../../common/typings/model'
-import Config from '../../config/Config'
 import { DataBaseFailed } from '../../core/HttpException'
 import redis from './redis'
 /**

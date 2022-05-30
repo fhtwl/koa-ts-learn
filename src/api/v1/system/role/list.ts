@@ -4,8 +4,6 @@ import KoaRouter from 'koa-router'
 import { Success } from '../../../../core/HttpException'
 import { getTreeByList, lineToHumpObject, sort } from '../../../../common/utils/utils'
 import { verifyTokenPermission } from '../../../../middlewares/verifyToken'
-import { selectDb } from '../../../../server/redis'
-import redis from '../../../../server/redis/redis'
 import { command } from '../../../../server/mysql'
 import { getPagination } from '../../../../common/utils/result'
 const router = new KoaRouter({
@@ -14,7 +12,7 @@ const router = new KoaRouter({
 
 router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
   const { params, pageNum, pageSize } = ctx.request.body as unknown as Models.BasePaginationQuery
-  const { name } = params
+  const { name = '' } = params
   const res = (
     await command(`
       (SELECT
@@ -26,7 +24,10 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
         serial_num,
         menu_ids
       FROM
-      system_role)
+      system_role
+      where
+        system_role.name like '%${name}%'
+      )
       ORDER BY
       updated_at DESC;
 

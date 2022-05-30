@@ -1,5 +1,3 @@
-import { Models } from '../typings/model'
-
 export function getPagination<T>(records: Array<T>, total: number, pageSize: number, pageNum: number) {
   return {
     records,

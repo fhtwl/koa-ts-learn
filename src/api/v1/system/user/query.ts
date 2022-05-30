@@ -82,7 +82,7 @@ router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
       filterMenuList.push(element)
     }
   })
-  const { info, roleName, menuId, menuName, userName, roleId, email } = AllMenulist[0]
+  const { info, roleName, userName, roleId, email } = AllMenulist[0]
 
   const menuList: Permissions[] = filterMenuList.map((item) => {
     // const actionList = JSON.parse(item.actionCheck)

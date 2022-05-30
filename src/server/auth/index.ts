@@ -87,7 +87,7 @@ export function getUserPermission(decode: Account.Decode): Promise<Menu.Menu[]> 
  */
 export function getRedisUserPermission(decode: Account.Decode): Promise<string[]> {
   const { scope } = decode
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve) => {
     selectDb(Config.REDIS_DB_NAME.ROLE).then(() => {
       redis.keys('*').then(async (res) => {
         Promise.all(res.map((item) => redis.hgetall(item))).then((result) => {
