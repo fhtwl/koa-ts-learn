@@ -73,7 +73,6 @@ export async function verifyTokenPermission(ctx: Models.Ctx, next: Function) {
     const permissionList: string[] = await getRedisUserPermission(decode)
 
     const bool = permissionList.find((permission) => {
-      // const path = ctx.path
       const path = `${Config.API_PREFIX}v1/${permission.split(':').join('/')}`
       return path === ctx.path
     })

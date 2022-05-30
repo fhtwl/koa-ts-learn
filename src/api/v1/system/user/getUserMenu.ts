@@ -26,8 +26,9 @@ router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
     `)
   ).results
 
-  // 过滤, 获取当前角色及当前角色的祖先角色的所有记录
+  // 存放当前用户的角色和祖宗角色
   const roleList: Account.Role[] = []
+  // 过滤, 获取当前角色及当前角色的祖先角色的所有记录
   const each = (list: Account.Role[], nodeId: number) => {
     const arr = list.filter((item) => item.id === nodeId)
     if (arr.length) {
@@ -35,6 +36,7 @@ router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
       each(list, arr[0].parentId)
     }
   }
+  // 将用户的角色ids转换为数组
   const roleIdList: number[] = roleIds.split(',').map((str: string) => Number(str))
   roleIdList.forEach((roleId) => {
     each(roleRes, roleId)
@@ -83,7 +85,9 @@ router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
       }
     })
   }
+  // 根据serialNum排序
   sortEach(res.results)
+  // 构建前端需要的menu树
   const list = (res.results as Menu.Menu[]).map(
     ({
       name,

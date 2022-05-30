@@ -41,15 +41,15 @@
 
 文中若有错误或者可优化之处, 望请不吝赐教
 
-# 二、角色设计
-
-## 1. 业务场景
+# 二、路由权限
 
 我们希望设计一个通用的后台管理系统, 每一个用户都能有多种角色, 每一个角色都能有多个用户, 每个角色都可以有多类和多个权限. 角色与角色之间有父子关系, 即它们的权限可以继承 <br>
 
 角色权限根据场景不同可以有多种, 我们这里只处理最基础也最通用的前端路由(菜单分类、菜单、操作按钮)权限和后端接口权限的的设计和开发, 当然, 角色可以有多个权限, 权限也可以有多个角色
 
-## 2. system_role
+## 1. 数据库表设计
+
+### 1. system_role
 
 我们需要新建 **system_role** 表用于存储所有的角色, 在前文中, 我们设计和创建了用户表 **system_user** , 并为 **system_user** 创建了 _role_ids_ 字段, 用于记录角色的 id. _role_ids_ 以逗号分隔字符串的形式, 存储多个 id , 即 **system_role** 的 id, 实现了每一个用户都能有多种角色, 每一个角色都能有多个用户. 在 **system_role** 中, 我们通 _menu_ids_ 字段保存前端菜单 id, 实现角色和菜单权限的多对多关系
 
@@ -69,7 +69,7 @@ CREATE TABLE `system_role`  (
 
 ```
 
-## 3. system_menu
+### 2. system_menu
 
 ```sh
   DROP TABLE IF EXISTS `system_menu`;
@@ -91,6 +91,364 @@ CREATE TABLE `system_role`  (
     PRIMARY KEY (`id`) USING BTREE
   ) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
+```
+
+## 2. 用户动态路由
+
+前端通过该接口创建动态路由和导航栏 <br />
+在 src/api/v1/system/user 下新建 getUserMenu.ts
+
+```ts
+// src/api/v1/system/user/getUserMenu.ts
+import { Models } from '../../../../common/typings/model'
+import KoaRouter from 'koa-router'
+import { command } from '../../../../server/mysql'
+import { Success } from '../../../../core/HttpException'
+import verifyToken from '../../../../middlewares/verifyToken'
+import { getTreeByList, sort } from '../../../../common/utils/utils'
+import { Account } from '../../../../common/typings/account'
+import Config from '../../../../config/Config'
+import { Menu } from '../../../../common/typings/menu'
+const router = new KoaRouter({
+  prefix: `${Config.API_PREFIX}v1/system/user`,
+})
+
+/**
+ * 获取当前用户的菜单
+ */
+router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
+  const { scope: roleIds } = ctx.auth
+  // 所有的角色
+  const roleRes = (
+    await command(`
+      SELECT
+        *
+      FROM
+        system_role
+    `)
+  ).results
+
+  // 存放当前用户的角色和祖宗角色
+  const roleList: Account.Role[] = []
+  // 过滤, 获取当前角色及当前角色的祖先角色的所有记录
+  const each = (list: Account.Role[], nodeId: number) => {
+    const arr = list.filter((item) => item.id === nodeId)
+    if (arr.length) {
+      roleList.push(...arr)
+      each(list, arr[0].parentId)
+    }
+  }
+  // 将用户的角色ids转换为数组
+  const roleIdList: number[] = roleIds.split(',').map((str: string) => Number(str))
+  roleIdList.forEach((roleId) => {
+    each(roleRes, roleId)
+  })
+
+  // 当前角色的角色树
+  const roleTree = getTreeByList(roleList, 0) as unknown as Account.Role[]
+  // 当前角色有权限的所有菜单.
+  let menuList: number[] = []
+  const merge = (list: Account.Role[]) => {
+    list.forEach((item) => {
+      menuList = [...new Set([...menuList, ...item.menuIds.split(',').map((str) => Number(str))])]
+      if (item.children) {
+        merge(item.children)
+      }
+    })
+  }
+  // 合并当前角色和当前角色的祖先角色的所有菜单
+  merge(roleTree)
+
+  // roleId 字段，角色，与权限相关
+  const res = await command(`
+      SELECT
+          menu.id,
+          menu.name title,
+          menu.show,
+          menu.icon,
+          menu.component,
+          menu.redirect,
+          menu.parent_id,
+          menu.path,
+          menu.hide_children,
+          menu.serial_num,
+          menu.permission,
+          menu.type
+      FROM
+        system_menu menu
+      WHERE
+          FIND_IN_SET(menu.id , '${menuList.join(',')}')
+    `)
+  const sortEach = (arr: Menu.Menu[]) => {
+    sort(arr, 'serialNum', 'desc')
+    arr.forEach((item) => {
+      if (item.children) {
+        sortEach(item.children)
+      }
+    })
+  }
+  // 根据serialNum排序
+  sortEach(res.results)
+  // 构建前端需要的menu树
+  const list = (res.results as Menu.Menu[]).map(
+    ({
+      name,
+      parentId,
+      id,
+      icon,
+      title,
+      show,
+      component,
+      redirect,
+      path,
+      hideChildren,
+      children,
+      serialNum,
+      permission,
+      type,
+    }) => {
+      const isHideChildren = Boolean(hideChildren)
+      const isShow = Boolean(show)
+      return {
+        name,
+        parentId,
+        id,
+        meta: {
+          icon,
+          title,
+          show: isShow,
+          hideChildren: isHideChildren,
+        },
+        component,
+        redirect,
+        path,
+        children,
+        serialNum,
+        permission,
+        type,
+      }
+    }
+  )
+
+  throw new Success(list)
+})
+
+export default router
+```
+
+## 3. 操作权限
+
+通过路由和导航的控制, 我们控制页面和路由的权限, 但是我们希望控制的颗粒度到达操作级, 即可以控制每个按钮的权限. <br />
+
+# 三、接口权限
+
+为了安全性, 我们在后端添加了接口的校验, 只有当前接口拥有访问权限时才能正常访问该接口. <br />
+
+接口的访问权限目前分为 3 种:
+
+- 任何人都可以访问
+- 登录用户可以访问
+- 某些角色可以访问
+
+我们给客户端的每一个需要访问接口的操作都设置一个权限字段 _permission_ , _permission_ 由接口的路由构成, 比如:
+
+> system:user:query
+
+当用户访问接口时, 会经过权限校验中间件, 通过 token 解析获取角色, 以此获取当前角色的接口权限列表, 再通过上下文对象 _Context_ 获取接口路径, 并转换为路径权限字段, 当接口权限列表里包含该路径权限字段时, 说明该角色拥有该接口的访问权限, 否则拒绝访问<br />
+
+如果每次都查询 mysql 去获取权限, 会对性能带来浪费, 故这里考虑对角色进行缓存
+
+## 1. 缓存角色
+
+我们使用 redis 实现角色的缓存, 将角色 id 作为 key, 使用 hash 类型将关键信息 _id_ 、 _parentId_ 、 _permissions_ 缓存起来 <br />
+
+- id: 角色 id
+- parentId: 角色的父 id
+- permissions: 角色权限字段的列表转换的逗号分隔的字符串
+
+```ts
+// src/server/auth/index.ts
+/**
+ * 获取用户权限
+ * @param decode
+ * @returns
+ */
+export function getUserPermission(decode: Account.Decode): Promise<Menu.Menu[]> {
+  const { scope } = decode
+  return new Promise(async (resolve, reject) => {
+    let res: Models.Result
+
+    try {
+      res = await command(`
+          SELECT
+            menu_ids
+          FROM
+            system_role
+          where
+            id = ${scope}
+      `)
+      if (!res.error) {
+        const role = res.results[0]
+        if (role) {
+          const menuList: Menu.Menu[] = (
+            await command(`
+              SELECT
+                permission
+              FROM
+                system_menu
+              WHERE
+                FIND_IN_SET(
+                id,
+                '${role.menuIds}')
+            `)
+          ).results
+          resolve(menuList)
+        } else {
+          resolve([])
+        }
+      } else {
+        reject()
+      }
+    } catch (error) {
+      console.log(error)
+      reject()
+    }
+  })
+}
+
+/**
+ * 获取所有角色的权限列表
+ * @returns
+ */
+export function getAllRolePermission(): Promise<Role.Role[]> {
+  return new Promise(async (resolve, reject) => {
+    let res: Models.Result
+    try {
+      res = await command(`
+          SELECT
+            id,
+            menu_ids,
+            parent_id parentId,
+            name
+          FROM
+            system_role
+      `)
+      if (!res.error) {
+        const RoleList: Role.Role[] = []
+        for (let i = 0; i < res.results.length; i++) {
+          const item: Menu.Menu = res.results[i]
+          RoleList.push({
+            id: item.id,
+            parentId: item.parentId,
+            name: item.name,
+            menuList: await getUserPermission({
+              scope: String(item.id),
+              uid: 0,
+            }),
+          })
+        }
+        resolve(RoleList)
+      } else {
+        reject()
+      }
+    } catch (error) {
+      console.log(error)
+      reject()
+    }
+  })
+}
+
+/**
+ * 更新redis里的角色
+ */
+export function updateRedisRole() {
+  getAllRolePermission().then((list) => {
+    list.forEach((res) => {
+      if (res.menuList.length > 0) {
+        updateRoles(
+          (res.id || '').toString(),
+          new Map([
+            ['id', res.id.toString()],
+            ['parentId', res.parentId.toString()],
+            ['permissions', res.menuList.map((item: { permission: string }) => item.permission).join(',')],
+          ])
+        )
+      }
+    })
+  })
+}
+```
+
+在服务启动时, 执行角色的缓存
+
+```ts
+// src/core/Init.ts
+import { updateRedisRole } from '../server/auth'
+class Init {
+  public static initCore(app: Koa<Koa.DefaultState, Koa.DefaultContext>, server: http.Server) {
+    ...
+    Init.updateRedisRole()
+  }
+
+  ...
+  // 更新redis里的角色数据
+  public static updateRedisRole() {
+    updateRedisRole()
+  }
+}
+```
+
+## 2. 角色接口访问权限中间件开发
+
+```ts
+// src/middlewares/verifyToken.ts
+
+import { getRedisUserPermission } from '../server/auth'
+/**
+ * 校验token是否合法
+ * @param ctx
+ * @param next
+ * @param callback
+ */
+export default async function verifyToken(ctx: Models.Ctx, next: Function, callback?: Function) {
+  // 获取token
+  const userToken = getToken(ctx)
+  // 如果token不存在, 或者不存在redis里
+  if (!userToken || !(await getTokenValue(userToken)).results) {
+    throw new Forbbiden('无访问权限')
+  }
+  // 尝试解析token, 获取uid和scope
+  const { uid, scope } = (await analyzeToken(userToken)) as Account.Decode
+  // 在上下文保存uid和scope
+  ctx.auth = {
+    uid,
+    scope,
+  }
+  if (callback) {
+    await callback({ uid, scope })
+  }
+  await next()
+}
+
+/**
+ * 校验token权限
+ * @param ctx
+ * @param next
+ */
+export async function verifyTokenPermission(ctx: Models.Ctx, next: Function) {
+  await verifyToken(ctx, next, async (decode: Account.Decode) => {
+    // 获取当前角色的权限字段列表
+    const permissionList: string[] = await getRedisUserPermission(decode)
+
+    const bool = permissionList.find((permission) => {
+      const path = `${Config.API_PREFIX}v1/${permission.split(':').join('/')}`
+      return path === ctx.path
+    })
+    if (!bool) {
+      throw new Forbbiden('权限不足')
+    }
+  })
+}
 ```
 
 # 六、总结
