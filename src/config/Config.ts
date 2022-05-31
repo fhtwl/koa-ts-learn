@@ -15,10 +15,10 @@ export default class Config {
   // mysql配置
   public static readonly MYSQL = {
     DB_NAME: 'admin',
-    HOST: '1.116.40.155',
+    HOST: '127.0.0.1',
     PORT: 3306,
     USER_NAME: 'admin',
-    PASSWORD: 'BhxNnfbRWacKpBjy',
+    PASSWORD: 'admin',
     CONNECTION_LIMIT: 60 * 60 * 1000,
     CONNECT_TIMEOUT: 1000 * 60 * 60 * 1000,
     ACQUIRE_TIMEOUT: 60 * 60 * 1000,
@@ -27,7 +27,7 @@ export default class Config {
   // redis
   public static readonly REDIS = {
     PORT: 6379,
-    HOST: '1.116.40.155',
+    HOST: '127.0.0.1',
     PASSWORD: 'admin',
     DB: 0,
   }

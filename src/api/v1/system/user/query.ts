@@ -38,8 +38,10 @@ const router = new KoaRouter({
 
 router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
   const { uid } = ctx.auth
-
-  const res = await command(`
+  // 查询获取所有的菜单(包括菜单目录和按钮)
+  const AllMenulist = (
+    (
+      await command(`
     SELECT
         user.user_name,
         user.email,
@@ -65,12 +67,15 @@ router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
         AND FIND_IN_SET(role.id , user.role_ids)
         AND FIND_IN_SET(menu.id , role.menu_ids)
   `)
-  const AllMenulist = (res.results as MenuList[]).map((item) => {
+    ).results as MenuList[]
+  ).map((item) => {
     item.info = JSON.parse(item.infoStr)
     return {
       ...item,
     }
   })
+
+  // 上面的查询会有重复, 过滤重复数据
   const filterMenuList: MenuList[] = []
   AllMenulist.forEach((element: MenuList) => {
     const info: Account.UserInfo = JSON.parse(element.infoStr)
@@ -84,9 +89,8 @@ router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
   })
   const { info, roleName, userName, roleId, email } = AllMenulist[0]
 
+  // 将数据转换为前端需要的数据结构
   const menuList: Permissions[] = filterMenuList.map((item) => {
-    // const actionList = JSON.parse(item.actionCheck)
-    // console.log(JSON.parse(actionList))
     return {
       roleId: item.roleId,
       roleName: item.roleName,
@@ -100,8 +104,11 @@ router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
       permission: item.menuPermission,
     }
   })
+  // 获取所有的操作(即按钮)
   const allActions: Permissions[] = menuList.filter((item) => item.menuType === 3)
+  // 获取所有的菜单目录和菜单
   const allMenu: Permissions[] = menuList.filter((item) => item.menuType === 1 || item.menuType === 2) || []
+  // 根据parentId给菜单添加操作
   allMenu.forEach((menu) => {
     menu.actions = allActions
       .filter((item) => item.parentId === menu.id)

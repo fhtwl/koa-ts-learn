@@ -240,6 +240,149 @@ export default router
 
 通过路由和导航的控制, 我们控制页面和路由的权限, 但是我们希望控制的颗粒度到达操作级, 即可以控制每个按钮的权限. <br />
 
+修改 system/user/query 接口, 返回权限
+
+```ts
+// src/api/v1/system/user/query.ts
+
+import KoaRouter from 'koa-router'
+import { Models } from '../../../../common/typings/model'
+import { command } from '../../../../server/mysql'
+import { Success } from '../../../../core/HttpException'
+import Config from '../../../../config/Config'
+import verifyToken from '../../../../middlewares/verifyToken'
+import { Account } from '../../../../common/typings/account'
+import { Menu } from '../../../../common/typings/menu'
+
+interface MenuList extends Account.User {
+  roleParentId: number
+  menuId: number
+  roleName: string
+  roleId: number
+  menuName: string
+  menuType: Menu.MenuType
+  serialNum: number
+  show: 0 | 1
+  menuParentId: number
+  menuPermission: string
+}
+
+interface Permissions {
+  name: string
+  roleId: number
+  id: number
+  menuType: Menu.MenuType
+  show: number
+  parentId: number
+  serialNum: number
+  permission: string
+  actions: Account.Action[]
+}
+
+const router = new KoaRouter({
+  prefix: `${Config.API_PREFIX}v1/system/user`,
+})
+
+router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
+  const { uid } = ctx.auth
+  // 查询获取所有的菜单(包括菜单目录和按钮)
+  const AllMenulist = (
+    (
+      await command(`
+    SELECT
+        user.user_name,
+        user.email,
+        user.info infoStr,
+        user.deleted,
+        role.name roleName,
+        role.id roleId,
+        role.menu_ids,
+        role.parent_id roleParentId,
+        menu.name menuName,
+        menu.id menuId,
+        menu.type menuType,
+        menu.show,
+        menu.serial_num,
+        menu.parent_id menuParentId,
+        menu.permission menuPermission
+    FROM
+        system_user user,
+        system_role role,
+        system_menu menu
+    WHERE
+        user.id = ${uid}
+        AND FIND_IN_SET(role.id , user.role_ids)
+        AND FIND_IN_SET(menu.id , role.menu_ids)
+  `)
+    ).results as MenuList[]
+  ).map((item) => {
+    item.info = JSON.parse(item.infoStr)
+    return {
+      ...item,
+    }
+  })
+
+  // 上面的查询会有重复, 过滤重复数据
+  const filterMenuList: MenuList[] = []
+  AllMenulist.forEach((element: MenuList) => {
+    const info: Account.UserInfo = JSON.parse(element.infoStr)
+    const data = filterMenuList.find(
+      (item) =>
+        info.nickName === item.info.nickName && element.roleIds === item.roleIds && element.menuId === item.menuId
+    )
+    if (!data) {
+      filterMenuList.push(element)
+    }
+  })
+  const { info, roleName, userName, roleId, email } = AllMenulist[0]
+
+  // 将数据转换为前端需要的数据结构
+  const menuList: Permissions[] = filterMenuList.map((item) => {
+    return {
+      roleId: item.roleId,
+      roleName: item.roleName,
+      id: item.menuId,
+      menuType: item.menuType,
+      name: item.menuName,
+      show: item.show,
+      serialNum: item.serialNum,
+      actions: [],
+      parentId: item.menuParentId,
+      permission: item.menuPermission,
+    }
+  })
+  // 获取所有的操作(即按钮)
+  const allActions: Permissions[] = menuList.filter((item) => item.menuType === 3)
+  // 获取所有的菜单目录和菜单
+  const allMenu: Permissions[] = menuList.filter((item) => item.menuType === 1 || item.menuType === 2) || []
+  // 根据parentId给菜单添加操作
+  allMenu.forEach((menu) => {
+    menu.actions = allActions
+      .filter((item) => item.parentId === menu.id)
+      .map((item) => {
+        return {
+          id: item.id,
+          serialNum: item.serialNum,
+          permission: item.permission,
+        }
+      })
+  })
+  const userInfo = {
+    userName,
+    email,
+    info,
+    role: {
+      roleName,
+      roleId,
+      permissions: allMenu,
+    },
+  }
+  throw new Success(userInfo)
+})
+
+export default router
+```
+
 # 三、接口权限
 
 为了安全性, 我们在后端添加了接口的校验, 只有当前接口拥有访问权限时才能正常访问该接口. <br />
@@ -451,8 +594,47 @@ export async function verifyTokenPermission(ctx: Models.Ctx, next: Function) {
 }
 ```
 
-# 六、总结
+当接口需要校验角色权限时, 则给接口添加 _verifyTokenPermission_ 中间件; 当接口只需要登录即可访问时, 给接口添加 _verifyToken_ 中间件; 否则不添加权限校验中间件
 
-本文从数据库创建开始, 对完整的注册和登录功能进行了设计和开发, 下一节将开始介绍权限管理控制的设计和开发<br />
+## 3. 修改角色和权限
+
+当用户修改角色和权限成功后, 更新 redis 缓存
+
+```ts
+// src/api/v1/system/role/add.ts
+
+import { Models } from '../../../../common/typings/model'
+import Config from '../../../../config/Config'
+import KoaRouter from 'koa-router'
+import { Success } from '../../../../core/HttpException'
+import validator from '../../../../middlewares/validator'
+import addRole from '../../../../common/apiJsonSchema/system/role/addRole'
+import { format } from '../../../../common/utils/date'
+import { command } from '../../../../server/mysql'
+import { verifyTokenPermission } from '../../../../middlewares/verifyToken'
+import { updateRedisRole } from '../../../../server/auth'
+
+const router = new KoaRouter({
+  prefix: `${Config.API_PREFIX}v1/system/role`,
+})
+
+router.post('/add', verifyTokenPermission, validator(addRole, 'body'), async (ctx: Models.Ctx) => {
+  const { name, parentId, describe = '', serialNum } = ctx.request.body
+  const date = format(new Date())
+  const res = await command(`
+    INSERT INTO system_role ( name, parent_id, \`describe\`, serial_num, created_at, updated_at )
+    VALUES
+    ( '${name}', ${parentId}, '${describe}', ${serialNum}, '${date}', '${date}' );
+  `)
+  updateRedisRole()
+  throw new Success(res)
+})
+
+export default router
+```
+
+# 四、总结
+
+本文从数据库创建开始, 对角色和权限功能进行了设计和开发, 至此该系列结束, 一个基于 koa2 和 ts 的 web 后端框架基本搭建完成<br />
 
 本文的完整代码地址 <a href="https://github.com/fhtwl/koa-ts-learn/tree/step3"> github koa-ts-learn</a>
