@@ -8,8 +8,8 @@ export namespace Account {
   interface Decode {
     scope: Scope
     uid: Uid
-    exp: number
-    iat: number
+    exp?: number
+    iat?: number
   }
 
   interface UserInfo {
@@ -21,16 +21,24 @@ export namespace Account {
   interface User {
     id: Uid
     info: UserInfo
+    infoStr: string
     userName: string
     email: string
     password: string
     openId?: string
     roleIds: Scope
   }
-  // interface Role {
-  //   id: number
-  //   parentId: number
-  //   permissions: string
-  //   children: Role[]
-  // }
+
+  interface Role {
+    id: number
+    parentId: number
+    menuIds: string
+    children: Role[]
+  }
+
+  interface Action {
+    id: number
+    serialNum: number
+    permission: string
+  }
 }

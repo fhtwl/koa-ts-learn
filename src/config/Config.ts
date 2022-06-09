@@ -1,3 +1,4 @@
+import REDIS_DB_NAME from './RedisDbName'
 const isDev = process.env.NODE_ENV === 'development'
 
 export default class Config {
@@ -9,8 +10,8 @@ export default class Config {
   public static readonly API_PREFIX = '/api/'
   // 根目录
   public static readonly BASE = isDev ? 'src' : 'dist/src'
-  // 默认redis数据库
-  public static readonly DEFAULT_REDIS_DB_NAME = 0
+  // redis数据库
+  public static readonly REDIS_DB_NAME = REDIS_DB_NAME
   // mysql配置
   public static readonly MYSQL = {
     DB_NAME: 'admin',
@@ -40,6 +41,6 @@ export default class Config {
     // 过期时间
     EXPIRES_IN: 60 * 60 * 24 * 0.5,
     // 存储token的redis数据库名
-    TOKEN_REDIS_DB: 3,
+    TOKEN_REDIS_DB: Config.REDIS_DB_NAME.TOKEN,
   }
 }

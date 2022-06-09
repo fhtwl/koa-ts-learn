@@ -8,7 +8,7 @@ import schema from '../../../../common/apiJsonSchema/system/auth/login'
 import verificationCodeValidator from '../../../../middlewares/verificationCodeValidator'
 import { generateToken } from '../../../../server/auth'
 import { Account } from '../../../../common/typings/account'
-import { saveToken } from '../../../../server/redis'
+import { saveToken } from '../../../../server/auth/token'
 
 const router = new KoaRouter({
   prefix: `${Config.API_PREFIX}v1/system/auth`,

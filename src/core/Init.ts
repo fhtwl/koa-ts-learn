@@ -7,6 +7,7 @@ import Router from 'koa-router'
 import Config from '../config/Config'
 import catchError from '../middlewares/catchError'
 import session from 'koa-session'
+import { updateRedisRole } from '../server/auth'
 class Init {
   public static app: Koa<Koa.DefaultState, Koa.DefaultContext>
   public static server: http.Server
@@ -17,6 +18,7 @@ class Init {
     Init.initCatchError()
     Init.loadSession()
     Init.initLoadRouters()
+    Init.updateRedisRole()
   }
 
   // 解析body参数
@@ -54,6 +56,11 @@ class Init {
         Init.app
       )
     )
+  }
+
+  // 更新redis里的角色数据
+  public static updateRedisRole() {
+    updateRedisRole()
   }
 }
 

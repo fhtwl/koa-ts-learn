@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon ./src/app.ts",
-    "build": "tsc && cross-env NODE_ENV=production node dist/src/app.js"
+    "build": "tsc && cross-env NODE_ENV=production node dist/src/app.js",
+    "lint": "eslint . --ext .ts --fix"
   },
   "keywords": [],
   "author": "",
