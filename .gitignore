@@ -6,3 +6,5 @@ dist/
 package-lock.json
 yarn-lock.json
 yarn.lock
+
+/src/config/Config.ts

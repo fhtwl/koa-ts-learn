@@ -4,16 +4,14 @@ import { command } from '../../../../server/mysql'
 import { Success } from '../../../../core/HttpException'
 import Config from '../../../../config/Config'
 import verifyToken from '../../../../middlewares/verifyToken'
-import { Account } from '../../../../common/typings/account'
-import { Menu } from '../../../../common/typings/menu'
 
-interface MenuList extends Account.User {
+interface MenuList extends System.User {
   roleParentId: number
   menuId: number
   roleName: string
   roleId: number
   menuName: string
-  menuType: Menu.MenuType
+  menuType: System.MenuType
   serialNum: number
   show: 0 | 1
   menuParentId: number
@@ -24,12 +22,12 @@ interface Permissions {
   name: string
   roleId: number
   id: number
-  menuType: Menu.MenuType
+  menuType: System.MenuType
   show: number
   parentId: number
   serialNum: number
   permission: string
-  actions: Account.Action[]
+  actions: System.Action[]
 }
 
 const router = new KoaRouter({
@@ -78,7 +76,7 @@ router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
   // 上面的查询会有重复, 过滤重复数据
   const filterMenuList: MenuList[] = []
   AllMenulist.forEach((element: MenuList) => {
-    const info: Account.UserInfo = JSON.parse(element.infoStr)
+    const info: System.UserInfo = JSON.parse(element.infoStr)
     const data = filterMenuList.find(
       (item) =>
         info.nickName === item.info.nickName && element.roleIds === item.roleIds && element.menuId === item.menuId

@@ -1,8 +1,6 @@
-import { Models } from '../../../../common/typings/model'
 import KoaRouter from 'koa-router'
 import { Success } from '../../../../core/HttpException'
 import { lineToHumpObject, getTreeByList, sort } from '../../../../common/utils/utils'
-import { Menu } from '../../../../common/typings/menu'
 import Config from '../../../../config/Config'
 import verifyToken from '../../../../middlewares/verifyToken'
 import { command } from '../../../../server/mysql'
@@ -32,10 +30,10 @@ router.get('/getMenuMap', verifyToken, async () => {
   ORDER BY
     updated_at DESC;
 `)
-  ).results.map(lineToHumpObject) as Menu.Menu[]
+  ).results.map(lineToHumpObject) as System.Menu[]
 
   const records = getTreeByList(res, 0)
-  const each = (arr: Models.TreeNode[]) => {
+  const each = (arr: Common.TreeNode[]) => {
     sort(arr, 'serialNum', 'desc')
     arr.forEach((item) => {
       if (item.children) {

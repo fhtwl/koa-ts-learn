@@ -1,13 +1,10 @@
 import Config from '../../config/Config'
 import JWT from 'jsonwebtoken'
-import { Account } from '../../common/typings/account'
 import { command } from '../mysql'
-import { Menu } from '../../common/typings/menu'
 import { Models } from '../../common/typings/model'
 import { selectDb } from '../redis'
 import { getTreeByList } from '../../common/utils/utils'
 import redis from '../redis/redis'
-import { Role } from '../../common/typings/role'
 
 /**
  * 构建token
@@ -15,7 +12,7 @@ import { Role } from '../../common/typings/role'
  * @param scope
  * @returns
  */
-export function generateToken(uid: Account.Uid, scope: Account.Scope) {
+export function generateToken(uid: System.Uid, scope: System.Scope) {
   //传入id和权限
   const secretKey = Config.SECURITY.SECRET_KEY
   const expiresIn = Config.SECURITY.EXPIRES_IN
@@ -37,7 +34,7 @@ export function generateToken(uid: Account.Uid, scope: Account.Scope) {
  * @param decode
  * @returns
  */
-export function getUserPermission(decode: Account.Decode): Promise<Menu.Menu[]> {
+export function getUserPermission(decode: System.Decode): Promise<System.Menu[]> {
   const { scope } = decode
   return new Promise(async (resolve, reject) => {
     let res: Models.Result
@@ -54,7 +51,7 @@ export function getUserPermission(decode: Account.Decode): Promise<Menu.Menu[]> 
       if (!res.error) {
         const role = res.results[0]
         if (role) {
-          const menuList: Menu.Menu[] = (
+          const menuList: System.Menu[] = (
             await command(`
               SELECT
                 permission
@@ -85,13 +82,13 @@ export function getUserPermission(decode: Account.Decode): Promise<Menu.Menu[]> 
  * @param decode
  * @returns
  */
-export function getRedisUserPermission(decode: Account.Decode): Promise<string[]> {
+export function getRedisUserPermission(decode: System.Decode): Promise<string[]> {
   const { scope } = decode
   return new Promise(async (resolve) => {
     selectDb(Config.REDIS_DB_NAME.ROLE).then(() => {
       redis.keys('*').then(async (res) => {
         Promise.all(res.map((item) => redis.hgetall(item))).then((result) => {
-          const allRoleList = result.map((item) => {
+          const allRoleList: Common.List = result.map((item) => {
             return {
               ...item,
               id: Number(item.id),
@@ -100,8 +97,8 @@ export function getRedisUserPermission(decode: Account.Decode): Promise<string[]
           })
           const roleTree = getTreeByList(allRoleList, 0)
           // 过滤, 获取当前角色及当前角色的祖先角色的所有记录
-          const roleList: Models.TreeNode[] = []
-          const each = (list: Models.TreeNode[], nodeId: number) => {
+          const roleList: Common.TreeNode[] = []
+          const each = (list: Common.TreeNode[], nodeId: number) => {
             const arr = list.filter((item) => item.id === nodeId)
             if (arr.length) {
               roleList.push(...arr)
@@ -115,9 +112,9 @@ export function getRedisUserPermission(decode: Account.Decode): Promise<string[]
 
           // 当前角色有权限的所有权限.
           let permissionList: string[] = []
-          const merge = (list: Models.TreeNode[]) => {
+          const merge = (list: Common.TreeNode[]) => {
             list.forEach((item) => {
-              permissionList = [...new Set([...permissionList, ...item.permissions.split(',')])]
+              permissionList = [...new Set([...permissionList, ...(item.permissions as string).split(',')])]
               if (item.children) {
                 merge(item.children)
               }
@@ -136,7 +133,7 @@ export function getRedisUserPermission(decode: Account.Decode): Promise<string[]
  * 获取所有角色的权限列表
  * @returns
  */
-export function getAllRolePermission(): Promise<Role.Role[]> {
+export function getAllRolePermission(): Promise<System.Role[]> {
   return new Promise(async (resolve, reject) => {
     let res: Models.Result
     try {
@@ -150,9 +147,9 @@ export function getAllRolePermission(): Promise<Role.Role[]> {
             system_role
       `)
       if (!res.error) {
-        const RoleList: Role.Role[] = []
+        const RoleList: System.Role[] = []
         for (let i = 0; i < res.results.length; i++) {
-          const item: Menu.Menu = res.results[i]
+          const item: System.Role = res.results[i]
           RoleList.push({
             id: item.id,
             parentId: item.parentId,
@@ -161,6 +158,8 @@ export function getAllRolePermission(): Promise<Role.Role[]> {
               scope: String(item.id),
               uid: 0,
             }),
+            children: [],
+            menuIds: item.menuIds,
           })
         }
         resolve(RoleList)

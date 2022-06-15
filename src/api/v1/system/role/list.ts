@@ -11,7 +11,7 @@ const router = new KoaRouter({
 })
 
 router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
-  const { params, pageNum, pageSize } = ctx.request.body as unknown as Models.BasePaginationQuery
+  const { params, pageNum, pageSize } = ctx.request.body as unknown as Common.PaginationParams
   const { name = '' } = params
   const res = (
     await command(`
@@ -38,7 +38,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
   if (pageNum > 1) {
     records.splice((pageNum - 1) * pageSize, pageSize)
   }
-  const each = (arr: Models.TreeNode[]) => {
+  const each = (arr: Common.TreeNode[]) => {
     sort(arr, 'serialNum', 'desc')
     arr.forEach((item) => {
       if (item.children) {

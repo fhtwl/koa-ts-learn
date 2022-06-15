@@ -7,7 +7,6 @@ import validator from '../../../../middlewares/validator'
 import schema from '../../../../common/apiJsonSchema/system/auth/login'
 import verificationCodeValidator from '../../../../middlewares/verificationCodeValidator'
 import { generateToken } from '../../../../server/auth'
-import { Account } from '../../../../common/typings/account'
 import { saveToken } from '../../../../server/auth/token'
 
 const router = new KoaRouter({
@@ -24,7 +23,7 @@ router.post('/login', validator(schema, 'body'), verificationCodeValidator, asyn
         where
             user_name = '${userName}'
     `)
-  if ((res.results as Account.User[]).length > 0) {
+  if ((res.results as System.User[]).length > 0) {
     const user = res.results[0]
     const token = getToken(user, password)
     saveToken(token, user.id)
@@ -42,7 +41,7 @@ export default router
  * @param password
  * @returns
  */
-function getToken(user: Account.User, password: string): string {
+function getToken(user: System.User, password: string): string {
   if (user.password !== password) {
     throw new ParameterException('密码不正确')
   }

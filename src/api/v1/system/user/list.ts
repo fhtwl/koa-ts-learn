@@ -4,7 +4,6 @@ import { lineToHumpObject } from '../../../../common/utils/utils'
 import Config from '../../../../config/Config'
 import { verifyTokenPermission } from '../../../../middlewares/verifyToken'
 import { command } from '../../../../server/mysql'
-import { Account } from '../../../../common/typings/account'
 import { getPagination } from '../../../../common/utils/result'
 import { Success } from '../../../../core/HttpException'
 const router = new KoaRouter({
@@ -16,7 +15,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
     // params,
     pageNum,
     pageSize,
-  } = ctx.request.body as unknown as Models.BasePaginationQuery
+  } = ctx.request.body as unknown as Common.PaginationParams
 
   // roleId 字段，角色，与权限相关
   const res = (
@@ -43,7 +42,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
   `)
   ).results
   const total: number = res[1][0].total
-  const list: Account.User[] = []
+  const list: System.User[] = []
   for (const key in res[0]) {
     list.push(res[0][key])
   }

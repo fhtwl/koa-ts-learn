@@ -125,7 +125,7 @@ export function humpToLineObject(obj: Object) {
  * @param options
  * @returns
  */
-export function getTreeByList(list: Models.List, rootId: number, options?: Models.TreeOption) {
+export function getTreeByList(list: Common.List, rootId: number, options?: Common.TreeOption) {
   // 属性配置设置
   const attr = {
     id: options?.id || 'id',
@@ -133,37 +133,37 @@ export function getTreeByList(list: Models.List, rootId: number, options?: Model
     rootId,
   }
   const toTreeData = (
-    data: Models.List,
+    data: Common.List,
     attr: {
       id: string
       parentId: string
       rootId: number
     }
   ) => {
-    const tree: Models.TreeNode[] = []
-    const resData = data
+    const tree: Common.TreeNode[] = []
+    const resData: Common.List = data
     for (let i = 0; i < resData.length; i++) {
       if (resData[i].parentId === attr.rootId) {
         const obj = {
           ...resData[i],
-          id: resData[i][attr.id],
+          id: resData[i][attr.id] as number,
           children: [],
         }
-        tree.push(obj)
+        tree.push(obj as unknown as Common.TreeNode)
         resData.splice(i, 1)
         i--
       }
     }
-    const run = (treeArrs: Models.List[]) => {
+    const run = (treeArrs: Common.TreeNode[]) => {
       if (resData.length > 0) {
         for (let i = 0; i < treeArrs.length; i++) {
           for (let j = 0; j < resData.length; j++) {
             if (treeArrs[i].id === resData[j][attr.parentId]) {
-              const obj = {
+              const obj: Common.TreeNode = {
                 ...resData[j],
-                id: resData[j][attr.id],
+                id: resData[j][attr.id] as number,
                 children: [],
-              }
+              } as unknown as Common.TreeNode
               treeArrs[i].children.push(obj)
               resData.splice(j, 1)
               j--
@@ -186,7 +186,7 @@ export function getTreeByList(list: Models.List, rootId: number, options?: Model
  * @param propName
  * @param type
  */
-export function sort(arr: any[], propName: string, type: Models.SortType) {
+export function sort(arr: any[], propName: string, type: Common.SortType) {
   arr.sort((a, b) => {
     if (type === 'asc') {
       return b[propName] - a[propName]

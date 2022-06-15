@@ -2,7 +2,6 @@ import { Models } from '../common/typings/model'
 import Config from '../config/Config'
 import { AuthFailed, Forbbiden } from '../core/HttpException'
 import JWT from 'jsonwebtoken'
-import { Account } from '../common/typings/account'
 import { getTokenValue } from '../server/auth/token'
 import { getRedisUserPermission } from '../server/auth'
 
@@ -20,7 +19,7 @@ export default async function verifyToken(ctx: Models.Ctx, next: Function, callb
     throw new Forbbiden('无访问权限')
   }
   // 尝试解析token, 获取uid和scope
-  const { uid, scope } = (await analyzeToken(userToken)) as Account.Decode
+  const { uid, scope } = (await analyzeToken(userToken)) as System.Decode
   // 在上下文保存uid和scope
   ctx.auth = {
     uid,
@@ -69,7 +68,7 @@ async function analyzeToken(token: string) {
  * @param next
  */
 export async function verifyTokenPermission(ctx: Models.Ctx, next: Function) {
-  await verifyToken(ctx, next, async (decode: Account.Decode) => {
+  await verifyToken(ctx, next, async (decode: System.Decode) => {
     const permissionList: string[] = await getRedisUserPermission(decode)
 
     const bool = permissionList.find((permission) => {

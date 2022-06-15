@@ -2,7 +2,6 @@ import { Models } from '../../../../common/typings/model'
 import KoaRouter from 'koa-router'
 import { Success } from '../../../../core/HttpException'
 import { lineToHumpObject } from '../../../../common/utils/utils'
-import { Menu } from '../../../../common/typings/menu'
 import Config from '../../../../config/Config'
 import verifyToken from '../../../../middlewares/verifyToken'
 import { command } from '../../../../server/mysql'
@@ -27,7 +26,7 @@ router.get('/getMenuByRoleId', verifyToken, async (ctx: Models.Ctx) => {
   ORDER BY
     updated_at DESC;
 `)
-  ).results.map(lineToHumpObject) as Menu.Menu[]
+  ).results.map(lineToHumpObject) as System.Menu[]
 
   throw new Success(res.map((item) => item.id))
 })

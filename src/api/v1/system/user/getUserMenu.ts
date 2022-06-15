@@ -4,9 +4,7 @@ import { command } from '../../../../server/mysql'
 import { Success } from '../../../../core/HttpException'
 import verifyToken from '../../../../middlewares/verifyToken'
 import { getTreeByList, sort } from '../../../../common/utils/utils'
-import { Account } from '../../../../common/typings/account'
 import Config from '../../../../config/Config'
-import { Menu } from '../../../../common/typings/menu'
 const router = new KoaRouter({
   prefix: `${Config.API_PREFIX}v1/system/user`,
 })
@@ -27,9 +25,9 @@ router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
   ).results
 
   // 存放当前用户的角色和祖宗角色
-  const roleList: Account.Role[] = []
+  const roleList: System.Role[] = []
   // 过滤, 获取当前角色及当前角色的祖先角色的所有记录
-  const each = (list: Account.Role[], nodeId: number) => {
+  const each = (list: System.Role[], nodeId: number) => {
     const arr = list.filter((item) => item.id === nodeId)
     if (arr.length) {
       roleList.push(...arr)
@@ -43,10 +41,10 @@ router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
   })
 
   // 当前角色的角色树
-  const roleTree = getTreeByList(roleList, 0) as unknown as Account.Role[]
+  const roleTree = getTreeByList(roleList as unknown as Common.List, 0) as unknown as System.Role[]
   // 当前角色有权限的所有菜单.
   let menuList: number[] = []
-  const merge = (list: Account.Role[]) => {
+  const merge = (list: System.Role[]) => {
     list.forEach((item) => {
       menuList = [...new Set([...menuList, ...item.menuIds.split(',').map((str) => Number(str))])]
       if (item.children) {
@@ -77,7 +75,7 @@ router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
       WHERE
           FIND_IN_SET(menu.id , '${menuList.join(',')}')
     `)
-  const sortEach = (arr: Menu.Menu[]) => {
+  const sortEach = (arr: System.Menu[]) => {
     sort(arr, 'serialNum', 'desc')
     arr.forEach((item) => {
       if (item.children) {
@@ -88,7 +86,7 @@ router.post('/getUserMenu', verifyToken, async (ctx: Models.Ctx) => {
   // 根据serialNum排序
   sortEach(res.results)
   // 构建前端需要的menu树
-  const list = (res.results as Menu.Menu[]).map(
+  const list = (res.results as System.Menu[]).map(
     ({
       name,
       parentId,
