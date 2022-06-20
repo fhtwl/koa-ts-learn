@@ -16,7 +16,7 @@ export default async function verifyToken(ctx: Models.Ctx, next: Function, callb
   const userToken = getToken(ctx)
   // 如果token不存在, 或者不存在redis里
   if (!userToken || !(await getTokenValue(userToken)).results) {
-    throw new Forbbiden('无访问权限')
+    throw new AuthFailed('登录失效, 请重新登录')
   }
   // 尝试解析token, 获取uid和scope
   const { uid, scope } = (await analyzeToken(userToken)) as System.Decode
@@ -58,7 +58,7 @@ async function analyzeToken(token: string) {
     if (error.name === 'TokenExpiredError') {
       throw new AuthFailed('token已过期')
     }
-    throw new Forbbiden('token不合法')
+    throw new AuthFailed('token不合法')
   })
 }
 

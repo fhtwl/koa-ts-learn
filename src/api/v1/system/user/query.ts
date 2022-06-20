@@ -18,18 +18,6 @@ interface MenuList extends System.User {
   menuPermission: string
 }
 
-interface Permissions {
-  name: string
-  roleId: number
-  id: number
-  menuType: System.MenuType
-  show: number
-  parentId: number
-  serialNum: number
-  permission: string
-  actions: System.Action[]
-}
-
 const router = new KoaRouter({
   prefix: `${Config.API_PREFIX}v1/system/user`,
 })
@@ -88,7 +76,7 @@ router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
   const { info, roleName, userName, roleId, email } = AllMenulist[0]
 
   // 将数据转换为前端需要的数据结构
-  const menuList: Permissions[] = filterMenuList.map((item) => {
+  const menuList: System.Permission[] = filterMenuList.map((item) => {
     return {
       roleId: item.roleId,
       roleName: item.roleName,
@@ -103,9 +91,9 @@ router.get('/query', verifyToken, async (ctx: Models.Ctx) => {
     }
   })
   // 获取所有的操作(即按钮)
-  const allActions: Permissions[] = menuList.filter((item) => item.menuType === 3)
+  const allActions: System.Permission[] = menuList.filter((item) => item.menuType === 3)
   // 获取所有的菜单目录和菜单
-  const allMenu: Permissions[] = menuList.filter((item) => item.menuType === 1 || item.menuType === 2) || []
+  const allMenu: System.Permission[] = menuList.filter((item) => item.menuType === 1 || item.menuType === 2) || []
   // 根据parentId给菜单添加操作
   allMenu.forEach((menu) => {
     menu.actions = allActions

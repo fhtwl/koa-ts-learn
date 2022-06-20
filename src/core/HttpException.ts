@@ -1,3 +1,5 @@
+import HttpCode, { CODE } from './code'
+
 // http异常
 export class HttpException extends Error {
   public message: string
@@ -16,11 +18,11 @@ export class HttpException extends Error {
 }
 // http参数异常
 export class ParameterException extends HttpException {
-  constructor(msg?: string, errorCode?: number) {
+  constructor(msg?: string, errorCode?: CODE) {
     super()
-    this.code = 422
-    this.message = msg || '参数错误'
-    this.errorCode = errorCode || 10000
+    this.code = 200
+    this.message = msg || HttpCode.getMessage(CODE.CODE_11001 || errorCode)
+    this.errorCode = CODE.CODE_11001
   }
 }
 
@@ -29,11 +31,11 @@ export class Success extends HttpException {
   public data
   public responseType
   public session
-  constructor(data?: any, msg = 'ok', code = 200, errorCode = 0, responseType?: string, session?: string) {
+  constructor(data?: any, msg = 'ok', code = 200, errorCode = 10000, responseType?: string, session?: string) {
     super()
     this.code = code //200查询成功，201操作成功
     this.message = msg
-    this.errorCode = errorCode || 0
+    this.errorCode = errorCode
     this.data = data
     this.responseType = responseType
     this.session = session
