@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "ajv": "^8.11.0",
+    "ajv-keywords": "^5.1.0",
     "ioredis": "^5.0.4",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.4",
@@ -32,6 +33,7 @@
     "@fhtwl-admin/common": "0.0.6",
     "@fhtwl-admin/system": "0.0.9",
     "@types/ajv": "^1.0.0",
+    "@types/ajv-keywords": "^3.5.0",
     "@types/ioredis": "^4.28.10",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/koa": "^2.13.4",

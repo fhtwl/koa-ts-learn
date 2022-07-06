@@ -51,7 +51,7 @@ export class Buffer extends Success {
     super()
     this.code = 200 //200查询成功，201操作成功
     this.message = 'ok'
-    this.errorCode = 0
+    this.errorCode = CODE.CODE_10000
     this.data = data
     this.responseType = responseType
     this.session = session
