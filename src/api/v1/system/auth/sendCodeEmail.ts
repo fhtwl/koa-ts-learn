@@ -62,7 +62,7 @@ async function checkUserNameAndEmail(userName: string, email: string) {
     if (res.results.length > 0) {
       const userNameList = res.results.filter((item: { userName: any }) => item.userName === userName)
       const emailList = res.results.filter((item: { email: any }) => item.email === email)
-      const msgList = []
+      const msgList: string[] = []
       if (userNameList.length > 0) {
         msgList.push('该用户名已被注册')
       }
