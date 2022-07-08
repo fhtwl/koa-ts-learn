@@ -32,7 +32,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "@fhtwl-admin/common": "0.0.6",
+    "@fhtwl-admin/common": "0.0.7",
     "@fhtwl-admin/system": "0.0.9",
     "@types/ajv": "^1.0.0",
     "@types/ajv-keywords": "^3.5.0",
