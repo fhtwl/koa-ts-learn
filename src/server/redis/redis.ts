@@ -1,5 +1,5 @@
 import redisConfing from './redisConfing'
-import IoreDis from 'IoreDis'
+import IoreDis from 'ioredis'
 const redis = new IoreDis(redisConfing)
 export default redis
 
