@@ -10,8 +10,8 @@ const router = new KoaRouter({
   prefix: `${Config.API_PREFIX}v1/system/user`,
 })
 
-router.post('/editUserById', verifyTokenPermission, validator(editUserById, 'body'), async (ctx: Models.Ctx) => {
-  const { nickName, profile = '', avatar, roleId, id } = ctx.request.body
+router.post('/edit', verifyTokenPermission, validator(editUserById, 'body'), async (ctx: Models.Ctx) => {
+  const { nickName, profile = '', avatar, roleIds, id } = ctx.request.body
   const info = {
     nickName,
     profile,
@@ -20,7 +20,7 @@ router.post('/editUserById', verifyTokenPermission, validator(editUserById, 'bod
   await command(`
     UPDATE
       system_user
-    SET info = '${JSON.stringify(info)}', role_id = ${roleId}
+    SET info = '${JSON.stringify(info)}', role_ids = '${roleIds}'
     WHERE id = ${id}
   `)
 

@@ -17,6 +17,7 @@
     "ioredis": "^5.0.4",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.4",
+    "koa-body": "^5.0.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^10.1.1",
     "koa-session": "^6.2.0",
@@ -26,6 +27,7 @@
     "mongodb": "^4.5.0",
     "mysql": "^2.18.1",
     "nodemailer": "^6.7.5",
+    "qiniu": "^7.7.0",
     "svg-captcha": "^1.4.0",
     "validator": "^13.7.0"
   },
@@ -47,6 +49,7 @@
     "@types/mongodb": "^4.0.7",
     "@types/mysql": "^2.15.21",
     "@types/nodemailer": "^6.4.4",
+    "@types/qiniu": "^7.0.1",
     "@types/validator": "^13.7.2",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",

@@ -1,6 +1,6 @@
 export default {
   type: 'object',
-  required: ['nickName', 'profile', 'avatar', 'roleId', 'id'],
+  required: ['nickName', 'profile', 'avatar', 'roleIds', 'id'],
   properties: {
     nickName: {
       type: 'string',
@@ -11,8 +11,8 @@ export default {
     avatar: {
       type: 'string',
     },
-    roleId: {
-      type: 'number',
+    roleIds: {
+      type: 'string',
     },
     id: {
       type: 'number',

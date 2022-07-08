@@ -6,6 +6,7 @@ import validator from '../../../../middlewares/validator'
 import editRolePermissionById from '../../../../common/apiJsonSchema/system/role/editPermission'
 import { verifyTokenPermission } from '../../../../middlewares/verifyToken'
 import { command } from '../../../../server/mysql'
+import { updateRedisRole } from '../../../../server/auth'
 
 const router = new KoaRouter({
   prefix: `${Config.API_PREFIX}v1/system/role`,
@@ -23,7 +24,7 @@ router.post(
     SET menu_ids = '${ids}'
     WHERE id = ${roleId}
   `)
-
+    updateRedisRole()
     throw new Success()
   }
 )

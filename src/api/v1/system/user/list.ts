@@ -25,15 +25,11 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
         u.id,
         u.info,
         u.updated_at,
-        r.id roleId,
-        r.name roleName
+        u.role_ids
       FROM
-        system_user as u,
-        system_role as r
+        system_user as u
       WHERE
         u.deleted = 0
-      AND
-        FIND_IN_SET(r.id , u.role_ids)
         LIMIT ${pageNum - 1}, ${pageSize}
       )
       ORDER BY

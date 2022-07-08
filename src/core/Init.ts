@@ -1,6 +1,6 @@
 import Koa from 'koa'
 import http from 'http'
-import koaBodyParser from 'koa-bodyparser'
+import koaBody from 'koa-body'
 import path from 'path'
 import { getAllFilesExport } from '../common/utils/utils'
 import Router from 'koa-router'
@@ -23,7 +23,16 @@ class Init {
 
   // 解析body参数
   public static loadBodyParser() {
-    Init.app.use(koaBodyParser())
+    Init.app.use(
+      koaBody({
+        multipart: true, // 支持文件上传
+        // encoding: 'gzip',
+        formidable: {
+          maxFieldsSize: 2 * 1024 * 1024, // 最大文件为2兆
+          keepExtensions: true, // 保持文件的后缀
+        },
+      })
+    )
   }
 
   // http路由加载

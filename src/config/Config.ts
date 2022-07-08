@@ -43,4 +43,11 @@ export default class Config {
     // 存储token的redis数据库名
     TOKEN_REDIS_DB: Config.REDIS_DB_NAME.TOKEN,
   }
+
+  // 七牛云配置
+  public static readonly QINIU = {
+    AK: 'SfSNJhLqz3pr_on6VJJeeV2VkQKFQgRjPYmME6hj',
+    SK: 'QwnUDS8ywygG5QBmW0RJ38qjJWaM-dxhQmrFKiet',
+    BUCKET: 'node-static', // 七牛云存储空间名
+  }
 }
