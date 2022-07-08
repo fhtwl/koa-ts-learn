@@ -1,6 +1,6 @@
 # 使用 koa 将客户端的图片上传至七牛云
 
-## 图片的上传与服务端存储与静态 web 托管
+## 一. 图片的上传与服务端存储与静态 web 托管
 
 图片的上传和访问是一个很必要的功能. <br />
 
@@ -13,7 +13,7 @@
 
 使用一个独立的文件存储服务, 其它服务都可以将客户端上传的文件保存到这个文件存储服务里, 客户端也可以访问独立的这个文件存储服务, 可以比较完美地解决上述问题
 
-## 七牛云
+## 二. 七牛云
 
 这里使用七牛云对象存储服务提供第三方的文件上传、存储和访问功能<br />
 
@@ -31,7 +31,7 @@
 
 6. 客户端接收到服务端的文件信息, 请求结束
 
-### 解析 body
+### 1. 解析 body
 
 http 请求的报文主体(body)部分, 是以二进制数据的形式在网络中传输, 而 koa 本身并未集成对 body 的解析, 如果需要将 body 参数解析为键值对, 需要我们额外进行处理, <a href="https://www.npmjs.com/package/koa-body">koa-body</a>就是一个常用的帮助解析 http 中 body 内容的中间件, 包括 json、文本、文件、表单等. <br />
 
@@ -69,7 +69,7 @@ router.post('/img', verifyToken, async (ctx: Models.Ctx) => {
 export default router
 ```
 
-### 封装七牛云
+### 2.封装七牛云
 
 安装 七牛云 依赖
 
@@ -172,7 +172,7 @@ export async function upload(file: formidable.File): Promise<RespBody> {
 }
 ```
 
-### 将文件上传到七牛云
+### 3. 将文件上传到七牛云
 
 ```ts
 // src/api/v1/system/common/upload/img.ts
@@ -209,3 +209,9 @@ router.post('/img', verifyToken, async (ctx: Models.Ctx) => {
 
 export default router
 ```
+
+## 三、总结
+
+本文在 koa2 和 ts 的 web 后端框架的基础上, 实现了图片上传至七牛云的功能<br />
+
+本文的完整代码地址 <a href="https://github.com/fhtwl/koa-ts-learn/tree/step4"> github koa-ts-learn</a>
