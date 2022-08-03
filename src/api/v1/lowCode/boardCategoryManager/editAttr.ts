@@ -16,7 +16,7 @@ const router = new Router({
  */
 router.post('/editAttr', verifyTokenPermission, validator(editBoardAttrById, 'body'), async (ctx) => {
   const { id, name, parentId, type } = ctx.request.body
-  const tableName = type === 1 ? 'board' : 'lowcode_board_category'
+  const tableName = type === 1 ? 'lowcode_board' : 'lowcode_board_category'
   await command(`
     UPDATE
       ${tableName}

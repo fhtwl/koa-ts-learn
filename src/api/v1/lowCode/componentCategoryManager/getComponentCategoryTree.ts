@@ -18,7 +18,7 @@ router.get('/getComponentCategoryTree', verifyToken, async () => {
     SELECT
       *
     FROM
-      component_category
+      lowcode_component_category
   `)
 
   // const list = res.results[0][name].split(',')

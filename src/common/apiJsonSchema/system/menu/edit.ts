@@ -13,10 +13,10 @@ export default {
       type: 'number',
     },
     path: {
-      type: 'string',
+      type: ['string', 'null'],
     },
     icon: {
-      type: 'string',
+      type: ['string', 'null'],
     },
     serialNum: {
       type: 'number',
@@ -26,7 +26,7 @@ export default {
       enum: [0, 1],
     },
     component: {
-      type: 'string',
+      type: ['string', 'null'],
     },
     permission: {
       type: 'string',

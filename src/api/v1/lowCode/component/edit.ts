@@ -13,11 +13,11 @@ const router = new Router({
  * 修改看板属性
  * @return
  */
-router.post('/editComponentAttrById', verifyTokenPermission, validator(editComponentAttrById, 'body'), async (ctx) => {
+router.post('/edit', verifyTokenPermission, validator(editComponentAttrById, 'body'), async (ctx) => {
   const { id, name, parentId } = ctx.request.body
   await command(`
     UPDATE
-      component
+    lowcode_component
     SET name = "${name}", parent_id = ${parentId}
     WHERE id = ${id}
   `)

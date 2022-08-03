@@ -8,21 +8,25 @@ import addComponent from '../../../../common/apiJsonSchema/lowCode/component/add
 import { format } from '../../../../common/utils/date'
 
 const router = new Router({
-  prefix: '/api/v1/lowCode/component',
+  prefix: '/api/v1/lowCode/componentCategoryManager',
 })
 
 /*
- * 新增看板
+ * 新增组件和分类
  * @return
  */
-router.post('/addComponent', verifyTokenPermission, validator(addComponent, 'body'), async (ctx: Models.Ctx) => {
-  const { name, parentId, chartAxisData, chartStyle, chartType } = ctx.request.body
+router.post('/add', verifyTokenPermission, validator(addComponent, 'body'), async (ctx: Models.Ctx) => {
+  const { name, parentId, setting, chartType, type } = ctx.request.body
+  const tableName = type === 1 ? 'lowcode_component' : 'lowcode_component_category'
   const userId = ctx.auth.uid
   const date = format(new Date())
+  const names = `name, parent_id, ${type === 1 ? 'setting, chart_type,' : ''} created_user_id,  created_at, updated_at`
+  const value = type === 1 ? `${setting}', '${chartType}',` : ''
+  const values = `'${name}', ${parentId}, ${value} ${userId} ,'${date}', '${date}'`
   const res = await command(`
-    INSERT INTO component ( name, parent_id, chart_axis_data, chart_style, chart_type, created_user_id,  created_at, updated_at )
+    INSERT INTO component ( ${names} )
           VALUES
-          ( '${name}', ${parentId}, '${chartAxisData}', '${chartStyle}', ${chartType} ${userId} ,'${date}', '${date}' );
+          ( ${values} );
     SELECT
       b.id,
       b.name,
@@ -30,8 +34,8 @@ router.post('/addComponent', verifyTokenPermission, validator(addComponent, 'bod
       b.updated_at,
       u.user_name created_user
     FROM
-      component b,
-      user u
+      ${tableName} b,
+      system_user u
     WHERE
       b.id = (SELECT LAST_INSERT_ID())
     AND

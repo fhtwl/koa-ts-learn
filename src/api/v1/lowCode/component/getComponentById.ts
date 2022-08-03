@@ -20,7 +20,7 @@ router.get('/getComponentById', verifyTokenPermission, validator(getComponentByI
   SELECT
     *
     FROM
-      component
+      lowcode_component
     WHERE
       id = ${id}
   `)

@@ -6,18 +6,18 @@ import { command } from '../../../../server/mysql'
 import editComponentAttrById from '../../../../common/apiJsonSchema/lowCode/component/editComponentAttrById'
 
 const router = new Router({
-  prefix: '/api/v1/lowCode/componentCategoryManager',
+  prefix: '/api/v1/lowCode/component',
 })
 
 /*
- * 修改仪表盘分类属性
+ * 修改看板属性
  * @return
  */
-router.post('/editCategoryById', verifyTokenPermission, validator(editComponentAttrById, 'body'), async (ctx) => {
+router.post('/edit', verifyTokenPermission, validator(editComponentAttrById, 'body'), async (ctx) => {
   const { id, name, parentId } = ctx.request.body
   await command(`
     UPDATE
-      lowcode_component_category
+    lowcode_component
     SET name = "${name}", parent_id = ${parentId}
     WHERE id = ${id}
   `)
