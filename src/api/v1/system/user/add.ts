@@ -6,22 +6,18 @@ import Config from '../../../../config/Config'
 import add from '../../../../common/apiJsonSchema/system/user/add'
 import { verifyTokenPermission } from '../../../../middlewares/verifyToken'
 import { command } from '../../../../server/mysql'
+import { format } from '../../../../common/utils/date'
 const router = new KoaRouter({
   prefix: `${Config.API_PREFIX}v1/system/user`,
 })
 
-router.post('/edit', verifyTokenPermission, validator(add, 'body'), async (ctx: Models.Ctx) => {
-  const { nickName, profile = '', avatar, roleIds, id } = ctx.request.body
-  const info = {
-    nickName,
-    profile,
-    avatar,
-  }
+router.post('/add', verifyTokenPermission, validator(add, 'body'), async (ctx: Models.Ctx) => {
+  const { userName, roleIds, info, email, password } = ctx.request.body
+  const date = format(new Date())
   await command(`
-    UPDATE
-      system_user
-    SET info = '${JSON.stringify(info)}', role_ids = '${roleIds}'
-    WHERE id = ${id}
+  INSERT INTO system_user ( user_name, role_ids, info, email, password, created_at, updated_at )
+    VALUES
+    ( '${userName}', ${roleIds}, '${info}', ${email}, ${password}, '${date}', '${date}' );
   `)
 
   throw new Success()

@@ -25,7 +25,8 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
         u.id,
         u.info,
         u.updated_at,
-        u.role_ids
+        u.role_ids,
+        u.email
       FROM
         system_user as u
       WHERE
