@@ -13,7 +13,7 @@ interface MailOptions {
  * @param { MailOptions } mailOptions
  * @returns
  */
-export async function sendEmail({ from = '"聂万君" <1121145488@qq.com>', to, subject, text, html }: MailOptions) {
+export async function sendEmail({ from = '"Fhtwl" <1121145488@qq.com>', to, subject, text, html }: MailOptions) {
   return new Promise((resolve, reject) => {
     const mailOptions = {
       from,

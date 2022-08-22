@@ -2,7 +2,7 @@
   "name": "demo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon ./src/app.ts",
     "build": "tsc && cross-env NODE_ENV=production node dist/src/app.js",
