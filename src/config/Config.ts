@@ -5,7 +5,7 @@ export default class Config {
   // 是否是测试环境
   public static readonly IS_DEV = isDev
   // 服务器端口
-  public static readonly HTTP_PORT = 9000
+  public static readonly HTTP_PORT = 9002
   // 接口前缀
   public static readonly API_PREFIX = '/api/'
   // 根目录

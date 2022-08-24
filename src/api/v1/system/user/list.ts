@@ -60,7 +60,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
   const data = getPagination(
     list.map((item) => {
       item.info = JSON.parse(item.info as unknown as string)
-      return lineToHumpObject({ ...item, roleIds: undefined })
+      return lineToHumpObject(item)
     }),
     total,
     pageSize,
