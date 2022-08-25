@@ -15,12 +15,9 @@ interface RetUser extends System.User {
 }
 
 router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
-  const {
-    // params,
-    pageNum,
-    pageSize,
-  } = ctx.request.body as unknown as Common.PaginationParams
-
+  const { params, pageNum, pageSize } = ctx.request.body as unknown as Common.PaginationParams
+  const { name } = params
+  const nameStr = name ? `And u.user_name LIKE '%${name}%'` : ''
   // roleId 字段，角色，与权限相关
   const res = (
     await command(`
@@ -39,6 +36,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
       WHERE
         u.deleted = 0
         AND FIND_IN_SET(r.id , u.role_ids)
+        ${nameStr}
         LIMIT ${pageNum - 1}, ${pageSize}
       )
       ORDER BY

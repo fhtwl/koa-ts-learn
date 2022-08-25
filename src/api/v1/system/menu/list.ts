@@ -12,12 +12,9 @@ const router = new KoaRouter({
 })
 
 router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
-  const {
-    // params,
-    pageNum,
-    pageSize,
-  } = ctx.request.body as unknown as Common.PaginationParams
-
+  const { params, pageNum, pageSize } = ctx.request.body as unknown as Common.PaginationParams
+  const { name } = params
+  const nameStr = name ? `WHERE m.name LIKE '%${name}%'` : ''
   const res = (
     await command(`
   (
@@ -35,7 +32,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
       m.path
     FROM
       system_menu m
-
+    ${nameStr}
   )
   ORDER BY
     updated_at DESC;

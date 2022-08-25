@@ -12,7 +12,8 @@ const router = new KoaRouter({
 
 router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
   const { params, pageNum, pageSize } = ctx.request.body as unknown as Common.PaginationParams
-  const { name = '' } = params
+  const { name } = params
+  const nameStr = name ? `WHERE name LIKE '%${name}%'` : ''
   const res = (
     await command(`
       (SELECT
@@ -25,8 +26,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
         menu_ids
       FROM
       system_role
-      where
-        system_role.name like '%${name}%'
+        ${nameStr}
       )
       ORDER BY
       updated_at DESC;
