@@ -1,7 +1,7 @@
 import KoaRouter from 'koa-router'
 import { Models } from '../../../../common/typings/model'
 import Config from '../../../../config/Config'
-import { HttpException, Success } from '../../../../core/HttpException'
+import { HttpException, ParameterException, Success } from '../../../../core/HttpException'
 import { sendEmail } from '../../../../server/mailer'
 import { command } from '../../../../server/mysql'
 import validator from '../../../../middlewares/validator'
@@ -17,12 +17,13 @@ router.post('/sendCodeEmail', validator(schema, 'body'), async (ctx: Models.Ctx)
   const code = (Math.random() * 1000000).toFixed()
   // 在会话中添加验证码字段code
   ctx.session!.code = code
-  // 发送邮件
-  await sendEmail({
-    to: email,
-    subject: '验证码',
-    text: '验证码',
-    html: `
+  try {
+    // 发送邮件
+    await sendEmail({
+      to: email,
+      subject: '验证码',
+      text: '验证码',
+      html: `
             <div >
                 <p>您正在注册FHTWL低代码平台帐号，用户名<b>${userName}</b>，
                 验证邮箱为<b>${email}</b> 。
@@ -33,9 +34,12 @@ router.post('/sendCodeEmail', validator(schema, 'body'), async (ctx: Models.Ctx)
                 <p>请在注册页面填写该改验证码</p>
             </div>
         `,
-  })
+    })
 
-  throw new Success()
+    throw new Success()
+  } catch (error) {
+    throw new ParameterException(error as string)
+  }
 })
 
 export default router

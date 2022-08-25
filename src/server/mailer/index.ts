@@ -1,4 +1,4 @@
-import { HttpException } from '../../core/HttpException'
+import { ParameterException } from '../../core/HttpException'
 import transporter from './transporter'
 interface MailOptions {
   from?: string // 发件人
@@ -27,14 +27,19 @@ export async function sendEmail({ from = '"Fhtwl" <1121145488@qq.com>', to, subj
     mailOptions.subject = subject
     mailOptions.text = text
     mailOptions.html = html
-    transporter.sendMail(mailOptions).then((res: { response: string | string[] }) => {
-      if (res.response.indexOf('250') > -1) {
-        resolve(true)
-      } else {
-        reject()
-      }
-    })
+    transporter
+      .sendMail(mailOptions)
+      .then((res: { response: string | string[] }) => {
+        if (res.response.indexOf('250') > -1) {
+          resolve(true)
+        } else {
+          reject()
+        }
+      })
+      .catch((error) => {
+        reject(error.message)
+      })
   }).catch((error) => {
-    throw new HttpException(error.msg)
+    throw new ParameterException(error)
   })
 }
