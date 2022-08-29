@@ -15,10 +15,10 @@ export default class Config {
   // mysql配置
   public static readonly MYSQL = {
     DB_NAME: 'admin',
-    HOST: '0.0.0.0',
+    HOST: '1.116.40.155',
     PORT: 3306,
-    USER_NAME: 'xxxxxx',
-    PASSWORD: 'xxxxxxx',
+    USER_NAME: 'admin',
+    PASSWORD: 'BhxNnfbRWacKpBjy',
     CONNECTION_LIMIT: 60 * 60 * 1000,
     CONNECT_TIMEOUT: 1000 * 60 * 60 * 1000,
     ACQUIRE_TIMEOUT: 60 * 60 * 1000,
@@ -27,8 +27,8 @@ export default class Config {
   // redis
   public static readonly REDIS = {
     PORT: 6379,
-    HOST: '0.0.0.0',
-    PASSWORD: 'xxxxx',
+    HOST: '1.116.40.155',
+    PASSWORD: 'admin',
     DB: 0,
   }
   // 默认时间格式
@@ -46,8 +46,8 @@ export default class Config {
 
   // 七牛云配置
   public static readonly QINIU = {
-    AK: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    SK: 'xxxxxx-xxxxxxxxxxxxxxxxxxxxx',
+    AK: 'SfSNJhLqz3pr_on6VJJeeV2VkQKFQgRjPYmME6hj',
+    SK: 'QwnUDS8ywygG5QBmW0RJ38qjJWaM-dxhQmrFKiet',
     BUCKET: 'node-static', // 七牛云存储空间名
   }
 }
