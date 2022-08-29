@@ -6,7 +6,7 @@ import Config from '../../../../config/Config'
 import validator from '../../../../middlewares/validator'
 import schema from '../../../../common/apiJsonSchema/system/auth/login'
 import verificationCodeValidator from '../../../../middlewares/verificationCodeValidator'
-import { generateToken } from '../../../../server/auth'
+import { generateToken, updateRedisRole } from '../../../../server/auth'
 import { saveToken } from '../../../../server/auth/token'
 
 const router = new KoaRouter({
@@ -27,6 +27,7 @@ router.post('/login', validator(schema, 'body'), verificationCodeValidator, asyn
     const user = res.results[0]
     const token = getToken(user, password)
     saveToken(token, user.id)
+    updateRedisRole()
     throw new Success(token)
   } else {
     throw new QueryFailed('该用户名不存在')
