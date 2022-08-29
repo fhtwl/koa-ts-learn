@@ -14,12 +14,23 @@ const router = new KoaRouter({
 })
 
 router.post('/add', verifyTokenPermission, validator(addMenu, 'body'), async (ctx: Models.Ctx) => {
-  const { type, name, parentId, path = '', icon, serialNum, show, component = '', permission } = ctx.request.body
+  const {
+    type,
+    name,
+    parentId,
+    path = '',
+    icon,
+    serialNum,
+    show,
+    component = '',
+    componentPath = '',
+    permission,
+  } = ctx.request.body
   const date = format(new Date())
   await command(`
-    INSERT INTO system_menu ( name, parent_id, path, icon, type, serial_num, \`show\`, component, permission,  created_at, updated_at )
+    INSERT INTO system_menu ( name, parent_id, path, icon, type, serial_num, \`show\`, component,component_path, permission,  created_at, updated_at )
     VALUES
-    ( '${name}', ${parentId}, '${path}', '${icon}', ${type}, ${serialNum}, ${show}, '${component}', '${permission}', '${date}', '${date}' );
+    ( '${name}', ${parentId}, '${path}', '${icon}', ${type}, ${serialNum}, ${show}, '${component}','${componentPath}', '${permission}', '${date}', '${date}' );
   `)
   updateRedisRole()
   throw new Success()

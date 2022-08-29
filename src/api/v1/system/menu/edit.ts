@@ -23,6 +23,7 @@ router.post('/edit', verifyTokenPermission, validator(editMenuById, 'body'), asy
     serialNum,
     show,
     component = '',
+    componentPath = '',
     permission = '',
   } = ctx.request.body
   await command(`
@@ -37,6 +38,7 @@ router.post('/edit', verifyTokenPermission, validator(editMenuById, 'body'), asy
       serial_num = ${serialNum},
       \`show\` = ${show},
       component = '${component}',
+      component_path = '${componentPath}',
       permission = '${permission}'
     WHERE id = ${id}
   `)

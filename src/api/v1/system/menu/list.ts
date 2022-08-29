@@ -27,6 +27,7 @@ router.post('/list', verifyTokenPermission, async (ctx: Models.Ctx) => {
       m.icon,
       m.serial_num,
       m.component,
+      m.component_path,
       m.permission,
       m.type,
       m.path

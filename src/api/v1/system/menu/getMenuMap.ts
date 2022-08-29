@@ -22,6 +22,7 @@ router.get('/getMenuMap', verifyToken, async () => {
       m.icon,
       m.serial_num,
       m.component,
+      m.component_path,
       m.type
     FROM
       system_menu m
