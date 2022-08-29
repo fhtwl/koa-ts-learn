@@ -8,3 +8,5 @@ yarn-lock.json
 yarn.lock
 
 /src/config/Config.ts
+
+/src/ak.ts

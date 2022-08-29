@@ -1,3 +1,4 @@
+import { QINIU } from '../ak'
 import REDIS_DB_NAME from './RedisDbName'
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -46,8 +47,6 @@ export default class Config {
 
   // 七牛云配置
   public static readonly QINIU = {
-    AK: 'SfSNJhLqz3pr_on6VJJeeV2VkQKFQgRjPYmME6hj',
-    SK: 'QwnUDS8ywygG5QBmW0RJ38qjJWaM-dxhQmrFKiet',
-    BUCKET: 'node-static', // 七牛云存储空间名
+    ...QINIU,
   }
 }
