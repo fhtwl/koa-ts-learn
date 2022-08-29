@@ -1,3 +1,3 @@
 export default {
-  url: 'mongodb://admin:123456@1.116.40.155:27017/',
+  url: 'mongodb://xxxxx:xxxxx@0.0.0.0:27017/',
 }
