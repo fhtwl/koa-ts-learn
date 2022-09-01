@@ -69,7 +69,7 @@ class Init {
 
   // 更新redis里的角色数据
   public static updateRedisRole() {
-    updateRedisRole()
+    !Config.IS_DEV && updateRedisRole()
   }
 }
 
