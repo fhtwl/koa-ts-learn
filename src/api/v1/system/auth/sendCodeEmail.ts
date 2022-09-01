@@ -13,7 +13,7 @@ const router = new KoaRouter({
 
 router.post('/sendCodeEmail', validator(schema, 'body'), async (ctx: Models.Ctx) => {
   const { email, userName } = ctx.request.body
-  await checkUserNameAndEmail(userName, email)
+  // await checkUserNameAndEmail(userName, email)
   const code = (Math.random() * 1000000).toFixed()
   // 在会话中添加验证码字段code
   ctx.session!.code = code
@@ -35,11 +35,10 @@ router.post('/sendCodeEmail', validator(schema, 'body'), async (ctx: Models.Ctx)
             </div>
         `,
     })
-
-    throw new Success()
   } catch (error) {
     throw new ParameterException(error as string)
   }
+  throw new Success()
 })
 
 export default router
