@@ -3,14 +3,14 @@ import KoaRouter from 'koa-router'
 import { Success } from '../../../../core/HttpException'
 import validator from '../../../../middlewares/validator'
 import Config from '../../../../config/Config'
-import add from '../../../../common/apiJsonSchema/system/user/add'
+import edit from '../../../../common/apiJsonSchema/system/user/edit'
 import { verifyTokenPermission } from '../../../../middlewares/verifyToken'
 import { command } from '../../../../server/mysql'
 const router = new KoaRouter({
   prefix: `${Config.API_PREFIX}v1/system/user`,
 })
 
-router.post('/edit', verifyTokenPermission, validator(add, 'body'), async (ctx: Models.Ctx) => {
+router.post('/edit', verifyTokenPermission, validator(edit, 'body'), async (ctx: Models.Ctx) => {
   const { nickName, profile = '', avatar, roleIds, id } = ctx.request.body
   const info = {
     nickName,
