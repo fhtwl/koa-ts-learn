@@ -20,7 +20,7 @@ router.post('/register', validator(schema, 'body'), verificationCodeValidator, a
   await command(`
         INSERT INTO system_user ( user_name, email, password, role_ids, created_at, updated_at )
         VALUES
-        ( '${userName}', '${email}', '${password}', '', '${date}', '${date}' );
+        ( '${userName}', '${email}', '${password}', '2', '${date}', '${date}' );
     `)
 
   throw new Success()
