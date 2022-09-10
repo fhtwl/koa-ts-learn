@@ -1,22 +1,22 @@
-module.exports = {
-  root: true,
+{
+  "root": true,
 
-  env: {
-    node: true,
-    es2021: true,
+  "env": {
+    "node": true,
+    "es2021": true
   },
 
-  parser: '@typescript-eslint/parser',
+  "parser": "@typescript-eslint/parser",
 
-  parserOptions: {
-    ecmaVersion: 12,
-    sourceType: 'module',
-    tsconfigRootDir: __dirname,
-    project: ['./tsconfig.json'],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module",
+    // "tsconfigRootDir": __dirname,
+    "project": ["./tsconfig.json"]
   },
 
-  plugins: ['@typescript-eslint'],
-  rules: {
+  "plugins": ["@typescript-eslint"],
+  "rules": {
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "no-useless-escape": "off",
@@ -26,7 +26,7 @@ module.exports = {
     "@typescript-eslint/await-thnable": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/no-misused-promises": "off",
-    '@typescript-eslint/no-explicit-any': 'off',
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unsafe-call": "off",
     "@typescript-eslint/no-unsafe-argument": "off",
     "no-async-promise-executor": "off",
@@ -38,10 +38,10 @@ module.exports = {
     "space-before-function-paren": 0
   },
 
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'prettier',
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier",
   ],
 }
