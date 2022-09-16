@@ -16,7 +16,7 @@ export default class Config {
   // mysql配置
   public static readonly MYSQL = {
     DB_NAME: 'admin',
-    HOST: '10.0.16.8',
+    HOST: '1.116.40.155',
     PORT: 3306,
     USER_NAME: 'admin',
     PASSWORD: 'BhxNnfbRWacKpBjy',
@@ -28,7 +28,7 @@ export default class Config {
   // redis
   public static readonly REDIS = {
     PORT: 6379,
-    HOST: '10.0.16.8',
+    HOST: '1.116.40.155',
     PASSWORD: 'admin',
     DB: 0,
   }
