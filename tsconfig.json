@@ -12,8 +12,8 @@
     "typeRoots": ["./node_modules/@types/", "./node_modules/@fhtwl-admin/"]
   },
   "include": [ // 需要编译的的文件和目录
-    ".eslintrc.js",
-    ".prettier.js",
+    ".eslintrc.json",
+    ".prettierrc",
     "src/**/*"
   ],
   "files": [
