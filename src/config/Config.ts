@@ -5,6 +5,7 @@ const isDev = process.env.NODE_ENV === 'development'
 export default class Config {
   // 是否是测试环境
   public static readonly IS_DEV = isDev
+  public static readonly IP = isDev ? '1.116.40.155' : '10.0.16.8'
   // 服务器端口
   public static readonly HTTP_PORT = 9002
   // 接口前缀
@@ -16,7 +17,7 @@ export default class Config {
   // mysql配置
   public static readonly MYSQL = {
     DB_NAME: 'admin',
-    HOST: '10.0.16.8',
+    HOST: Config.IP,
     PORT: 3306,
     USER_NAME: 'admin',
     PASSWORD: 'BhxNnfbRWacKpBjy',
@@ -28,7 +29,7 @@ export default class Config {
   // redis
   public static readonly REDIS = {
     PORT: 6379,
-    HOST: '10.0.16.8',
+    HOST: Config.IP,
     PASSWORD: 'admin',
     DB: 0,
   }

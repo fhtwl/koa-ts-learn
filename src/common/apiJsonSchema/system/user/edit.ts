@@ -1,6 +1,6 @@
 export default {
   type: 'object',
-  required: ['userName', 'email', 'info', 'roleIds', 'id'],
+  required: ['userName', 'email', 'info', 'roleIds'],
   properties: {
     info: {
       type: 'object',
@@ -30,9 +30,6 @@ export default {
     },
     roleIds: {
       type: 'string',
-    },
-    id: {
-      type: 'number',
     },
   },
 }

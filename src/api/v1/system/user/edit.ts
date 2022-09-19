@@ -11,7 +11,7 @@ const router = new KoaRouter({
 })
 
 router.post('/edit', verifyTokenPermission, validator(edit, 'body'), async (ctx: Models.Ctx) => {
-  const { nickName, profile = '', avatar, roleIds, id, userName } = ctx.request.body
+  const { nickName, profile = '', avatar, roleIds, id } = ctx.request.body
   const info = {
     nickName,
     profile,
@@ -20,7 +20,7 @@ router.post('/edit', verifyTokenPermission, validator(edit, 'body'), async (ctx:
   await command(`
     UPDATE
       system_user
-    SET info = '${JSON.stringify(info)}', role_ids = '${roleIds}', user_name = '${userName}'
+    SET info = '${JSON.stringify(info)}', role_ids = '${roleIds}'
     WHERE id = ${id}
   `)
 

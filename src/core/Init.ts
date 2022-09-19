@@ -8,6 +8,7 @@ import Config from '../config/Config'
 import catchError from '../middlewares/catchError'
 import session from 'koa-session'
 import { updateRedisRole } from '../server/auth'
+import { initPlugin } from '../plugin/index'
 class Init {
   public static app: Koa<Koa.DefaultState, Koa.DefaultContext>
   public static server: http.Server
@@ -19,6 +20,7 @@ class Init {
     Init.loadSession()
     Init.initLoadRouters()
     Init.updateRedisRole()
+    Init.initPlugin()
   }
 
   // 解析body参数
@@ -69,7 +71,15 @@ class Init {
 
   // 更新redis里的角色数据
   public static updateRedisRole() {
-    !Config.IS_DEV && updateRedisRole()
+    updateRedisRole()
+  }
+
+  public static initPlugin() {
+    initPlugin({
+      pluginNames: ['WebSocket'],
+      app: Init.app,
+      server: Init.server,
+    })
   }
 }
 
