@@ -450,7 +450,7 @@ async function checkUserNameAndEmail(userName: string, email: string): Promise<{
       })
     } else {
       reject({
-        bool: false,
+        bool: true,
       })
     }
   })
