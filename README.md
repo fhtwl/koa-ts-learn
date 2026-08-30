@@ -1,4 +1,8 @@
+
+
 超细致 nodejs + koa2 + ts + mysql + redis 后端框架搭建
+
+本地开发运行：`npm run dev`
 
 目录
 
